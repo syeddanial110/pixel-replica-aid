@@ -66,42 +66,52 @@ export function CursorGlow() {
   );
 }
 
-/** Ambient synth drone via WebAudio — off by default. */
-export function SoundToggle() {
+/** Ambient synth score via WebAudio — off by default. The tone shifts per scene. */
+export function SoundToggle({ scene = 0 }: { scene?: number }) {
   const [on, setOn] = useState(false);
-  const ctx = useRef<AudioContext | null>(null);
+  const ctx = useRef<{ ac: AudioContext; filter: BiquadFilterNode; gain: GainNode } | null>(null);
+
+  useEffect(() => {
+    const c = ctx.current;
+    if (!c) return;
+    const freqs = [320, 900, 600, 1600];
+    c.filter.frequency.linearRampToValueAtTime(freqs[scene] ?? 400, c.ac.currentTime + 2.5);
+  }, [scene]);
+
+  useEffect(() => () => void ctx.current?.ac.close(), []);
+
   const toggle = () => {
     if (!on) {
       const ac = new AudioContext();
       const gain = ac.createGain();
       gain.gain.value = 0;
-      gain.gain.linearRampToValueAtTime(0.08, ac.currentTime + 2);
+      gain.gain.linearRampToValueAtTime(0.07, ac.currentTime + 2);
       const filter = ac.createBiquadFilter();
       filter.type = "lowpass";
-      filter.frequency.value = 400;
-      [55, 82.4, 110.5].forEach((f) => {
+      filter.frequency.value = 320;
+      [55, 82.4, 110.5, 164.8].forEach((f, i) => {
         const o = ac.createOscillator();
-        o.type = "sawtooth";
+        o.type = i === 3 ? "sine" : "sawtooth";
         o.frequency.value = f;
         o.connect(filter);
         o.start();
       });
       filter.connect(gain).connect(ac.destination);
-      ctx.current = ac;
+      ctx.current = { ac, filter, gain };
     } else {
-      ctx.current?.close();
+      ctx.current?.ac.close();
       ctx.current = null;
     }
     setOn(!on);
   };
   return (
-    <button onClick={toggle} aria-pressed={on} className="tagline flex items-center gap-2 text-muted-foreground transition-colors hover:text-gold">
+    <button onClick={toggle} aria-pressed={on} aria-label={on ? "Turn sound off" : "Enable sound"} className="tagline flex items-center gap-2 text-muted-foreground transition-colors hover:text-gold">
       <span className="flex h-3 items-end gap-[2px]">
         {[0, 1, 2, 3].map((i) => (
           <span key={i} className={`w-[2px] bg-current ${on ? "animate-pulse" : ""}`} style={{ height: on ? `${4 + ((i * 5) % 9)}px` : "3px", animationDelay: `${i * 120}ms` }} />
         ))}
       </span>
-      Sound {on ? "on" : "off"}
+      {on ? "Sound on" : "Enable sound"}
     </button>
   );
 }
