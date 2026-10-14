@@ -257,7 +257,7 @@ function FinalCTA() {
             </div>
             <label className="block"><span className="sr-only">Email</span><input required type="email" name="email" placeholder="Email" maxLength={255} className={field} /></label>
             <label className="block"><span className="sr-only">Message</span><textarea required name="message" rows={4} placeholder="What would you like to build?" maxLength={1000} className={field} /></label>
-            <div className="pt-2"><MagneticButton type="submit">{sent ? "Opening your email…" : "Let's build →"}</MagneticButton></div>
+            <div className="pt-2"><button type="submit" className="btn-gold tagline rounded-full px-8 py-4 transition-transform duration-500 ease-cinema hover:scale-105">{sent ? "Opening your email…" : "Let's build →"}</button></div>
           </form>
         </Reveal>
       </div>
