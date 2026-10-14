@@ -172,3 +172,29 @@
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+@utility btn-gold {
+  background: var(--gradient-gold-btn);
+  color: var(--primary-foreground);
+  box-shadow: var(--glow-gold);
+}
+@utility glass {
+  background: color-mix(in oklab, var(--navy) 45%, transparent);
+  backdrop-filter: blur(14px);
+  border: 1px solid color-mix(in oklab, var(--cobalt) 25%, transparent);
+}
+@utility ease-cinema { transition-timing-function: var(--ease-cinema); }
+
+@keyframes flicker {
+  0%, 18% { opacity: 0; }
+  22% { opacity: 0.7; }
+  30% { opacity: 0.1; }
+  45% { opacity: 0.8; }
+  55% { opacity: 0.3; }
+  70%, 100% { opacity: 1; }
+}
+.animate-flicker { animation: flicker 2.4s ease-in-out both; }
+@keyframes ignite {
+  from { opacity: 0; filter: blur(12px) brightness(2); }
+  to { opacity: 1; filter: blur(0) brightness(1); }
+}
